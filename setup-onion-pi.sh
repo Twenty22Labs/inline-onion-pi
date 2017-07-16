@@ -35,7 +35,7 @@ apt-get -y upgrade
 apt-get -y install ca-certificates
 
 ## setup our /etc/network/interfaces file so that
-## eth1 (our USB NIC) will serve as a gateway
+## wlan0 (our WIFI NIC) will serve as a gateway
 network_interfaces="auto lo
 iface lo inet loopback
 
@@ -43,9 +43,9 @@ iface lo inet loopback
 auto eth0
 iface eth0 inet dhcp
 
-#USB NIC serving as internal gateway
-auto eth1
-iface eth1 inet static
+#WIFI NIC serving as internal gateway
+auto wlan0
+iface wlan0 inet static
 address 192.168.50.1
 netmask 255.255.255.0
 network 192.168.50.0
@@ -106,9 +106,9 @@ apt-get -y install iptables
 ## now, configure iptables to let the LAN connections communicate with the WAN
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 ## this forwards UDP traffic on port 53 from the USB NIC to be redirected to local port 53 (for DNS traffic)
-iptables -t nat -A PREROUTING -i eth1 -p udp --dport 53 -j REDIRECT --to-ports 53
+iptables -t nat -A PREROUTING -i wlan0 -p udp --dport 53 -j REDIRECT --to-ports 53
 ## this forwards all TCP traffic from the USB NIC to be redirected to local port 9040
-iptables -t nat -A PREROUTING -i eth1 -p tcp --syn -j REDIRECT --to-ports 9040
+iptables -t nat -A PREROUTING -i wlan0 -p tcp --syn -j REDIRECT --to-ports 9040
 ## this blocks access from RFC 1918 subnets on your internet (eth0) interface as well as ICMP (ping) packets and ssh connections.
 iptables -A INPUT -s 192.168.0.0/24 -i eth0 -j DROP
 iptables -A INPUT -s 10.0.0.0/8 -i eth0 -j DROP
